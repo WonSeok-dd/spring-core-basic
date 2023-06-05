@@ -77,3 +77,34 @@
 - ![img4_6.png](file/img4_6.png)
 - 생성 방법1) 애노테이션 기반(@Configuration)의 자바 설정 클래스
 - 생성 방법2) XML 기반
+
+
+### ✅ BeanDefinition
+- **_스프링 빈 설정 메타정보_**
+- 인터페이스
+- **_스프링 컨테이너_** 의 다양한 설정 형식 지원
+  - 스프링 컨테이너는 BeanDefinition 만 판단
+  - 스프링 컨테이너는 BeanDefinition(빈 설정 메타정보)로 스프링 빈 생성
+  - 스프링 컨테이너는 BeanDefinition(interface)추상화에 의존
+- 역할과 구현을 개념적으로 나눔
+  - XML 을 읽어서 BeanDefinition 만들기
+  - 자바 코드를 읽어서 BeanDefinition 만들기
+
+
+- ![img4_7.png](file/img4_7.png)
+  1. AnnotationConfigApplicationContext 의 **_reader 필드_** 를 통해<br> 
+    **_AppConfig.class 의 정보 읽기_**
+  2. AnnotationConfigApplicationContext 가 해당 정보 토대로<br>
+    **_BeanDefinition(빈 설정 메타정보)생성_**
+
+
+- BeanClassName: 생성할 빈의 클래스 명(자바 설정 처럼 팩토리 역할의 빈을 사용하면 없음)
+- factoryBeanName: 팩토리 역할의 빈을 사용할 경우 이름, 예) appConfig 
+- factoryMethodName: 빈을 생성할 팩토리 메서드 지정, 예) memberService 
+- Scope: 싱글톤(기본값)
+- lazyInit: 스프링 컨테이너를 생성할 때 빈을 생성하는 것이 아니라, 실제 빈을 사용할 때 까지 최대한
+  생성을 지연처리 하는지 여부 
+- InitMethodName: 빈을 생성하고, 의존관계를 적용한 뒤에 호출되는 초기화 메서드 명 
+- DestroyMethodName: 빈의 생명주기가 끝나서 제거하기 직전에 호출되는 메서드 명 
+- Constructor arguments, Properties: 의존관계 주입에서 사용한다. (자바 설정 처럼 팩토리 역할의
+  빈을 사용하면 없음)
