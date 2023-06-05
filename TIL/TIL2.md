@@ -1,6 +1,6 @@
 # 🟢 스프링 핵심 원리 - 기본편
 
-## 📄 Section01 - 객체 지향 설계와 스프링
+## 📄 Section02 - 스프링 핵심 원리 이해1 - 예제 만들기
 ### ✅ Build and run 설정
 - File - Settings - gradle 
   - Build and run using - Intellij IDEA
