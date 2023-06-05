@@ -1,0 +1,27 @@
+package hello.core.xml;
+
+import hello.core.beanFind.ApplicationContextExtendsFindTest;
+import hello.core.member.MemberService;
+import hello.core.member.MemberServiceImpl;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+
+public class XmlAppContext {
+
+    ApplicationContext ac;
+
+    @BeforeEach
+    public void beforeEach(){
+        this.ac = new GenericXmlApplicationContext("appConfig.xml");
+    }
+
+    @Test
+    void xmlAppContext(){
+        MemberService memberService = ac.getBean("memberService", MemberService.class);
+        Assertions.assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+    }
+}
