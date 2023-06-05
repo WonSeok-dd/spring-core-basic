@@ -31,3 +31,25 @@
      - ![img4_2.png](file/img4_2.png)
   3. 스프링 빈 의존관계 설정 - 준비 및 완료
      - ![img4_3.png](file/img4_3.png)
+
+
+### ✅ 스프링 빈 조회
+- 스프링 빈 조회
+    ```
+    AnnotationConfigApplicationContext ac = 
+        new AnnotationConfigApplicationContext(AppConfig.class)
+
+    String[] beanDefinitionNames = ac.getBeanDefinitionNames();
+    for (String beanDefinitionName : beanDefinitionNames){
+        Object bean = ac.getBean(beanDefinitionName);
+        MemberService bean = ac.getBean("memberService", MemberService.class)
+        MemberService bean = ac.getBean(MemberService.class)
+  
+        BeanDefinition beanDefinition = ac.getBeanDefinition(beanDefinitionName);
+    }
+  
+    Map<String, MemberRepository> beansOfType = ac.getBeansOfType(MemberRepository.class);
+    for (String key : beansOfType.keySet()){
+            System.out.println("key = " + key + "/ value = " + beansOfType.get(key));
+    }
+    ```
