@@ -31,3 +31,8 @@
     - OrderServiceImpl은 MemberRepository, DiscountPolicy(추상)에 의존
   - 관심사의 분리 -> O
     - 구현 객체를 ***생성하고 연결하는 역할***과 ***실행하는 역할*** 분리
+
+
+- AppConfig 개선
+  - MemberService, OrderService의 MemoryRepository 중복 제거
+  - MemberService, OrderService의 생성자(new)가 아닌 메소드를 통해 역할과 구현 구분
