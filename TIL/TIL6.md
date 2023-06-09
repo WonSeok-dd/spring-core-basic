@@ -72,3 +72,15 @@
     - `CUSTOM`
       - `TypeFilter`라는 인터페이스를 구현해서 처리
       - ex) `org.example.MyTypeFilter`
+
+<br/>
+
+### ✅ 컴포넌트 스캔(`@ComponentScan`) 중복 등록과 충돌
+- 자동 빈 등록 vs 자동 빈 등록
+  - `ConflictingBeanDefinitionException` 예외 발생
+  
+  
+- 자동 빈 등록 vs 수동 빈 등록 
+  - **_수동 빈 등록_** 이 **_우선권_** 을 가짐
+  - 하지만 현재에는 `SpringBootApplication`에서 오류 발생
+    - `application.properties` 파일에서 Overriding 설정 추가
