@@ -45,3 +45,30 @@
     - `@Service`: 스프링 비즈니스 로직에서 사용
     - `@Repository`: 스프링 데이터 접근 계층에서 사용
     - `@Configuration`: 스프링 설정 정보에서 사용
+
+
+- 컴포넌트 스캔(`@ComponentScan`)의 설정 - **_필터 설정_**
+  - 설정 종류
+    - `includeFilters`<br/>
+      -> 컴포넌트 스캔 대상 추가 지정<br/>
+    - `excludeFilters`<br/>
+      -> 컴포넌트 스캔 대상 제외 지정<br/>
+      - `@Configuration` 붙은 클래스 제거(`@Configuration`에 `@Component` 등록됨)<br/>
+      - 즉 AppConfig 의 스프링 빈, 테스트 코드의 `@Configuration`붙은 클래스 제외
+  - FilterType 옵션
+    - `ANNOTATION`
+      - **_기본값_**
+      - 애노테이션을 인식해서 작동
+      - ex) `org.example.SomeAnnotation`
+    - `ASSIGNABLE_TYPE`
+      - 지정한 타입과 자식 타입을 인식해서 동작
+      - ex) `org.example.SomeClass`
+    - `ASPECTJ`
+      - AspectJ 패턴 사용
+      - ex) `org.example..*Service+`
+    - `REGEX`
+      - 정규 표현식
+      - ex) `org\.example\.Default.*`
+    - `CUSTOM`
+      - `TypeFilter`라는 인터페이스를 구현해서 처리
+      - ex) `org.example.MyTypeFilter`
