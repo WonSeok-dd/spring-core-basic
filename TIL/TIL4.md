@@ -12,11 +12,11 @@
 
 
 - 스프링 컨테이너 생성 방법2) 애노테이션 기반(@Configuration)의 자바 설정 클래스
-  ```
+  ```java
     ApplicationContext applicationContext 
        = new AnnotationConfigApplicationContext(AppConfig.class);
   ```
-  ```
+  ```java
     @Configuration
     public class AppConfig {
   
@@ -25,17 +25,15 @@
 
 
 - 스프링 컨테이너 생성 과정
-  1. 스프링 컨테이너 생성
-     - ![img4_1.png](file/img4_1.png)
-  2. 스프링 빈 등록
-     - ![img4_2.png](file/img4_2.png)
-  3. 스프링 빈 의존관계 설정 - 준비 및 완료
-     - ![img4_3.png](file/img4_3.png)
+  - ![img4_1.png](file/img4_1.png)
+  - ![img4_2.png](file/img4_2.png)
+  - ![img4_3.png](file/img4_3.png)
 
+<br/>
 
 ### ✅ 스프링 빈 조회
 - 스프링 빈 조회
-    ```
+    ```java
     AnnotationConfigApplicationContext ac = 
         new AnnotationConfigApplicationContext(AppConfig.class)
 
@@ -54,6 +52,7 @@
     }
     ```
 
+<br/>
 
 ### ✅ BeanFactory 와 ApplicationContext
 - ![img4_4.png](file/img4_4.png)
@@ -72,12 +71,14 @@
     - **_ApplicationEventPublisher(애플리케이션 이벤트)_**: 이벤트를 발행하고 구독하는 모델 지원
     - **_ResourceLoader(편리한 리소스 조회)_**: 파일, 클래스 패스, 외부 등에서 리소스 편리하게 조회 지원
 
+<br/>
 
 ### ✅ 스프링 컨테이너 생성 방법
 - ![img4_6.png](file/img4_6.png)
 - 생성 방법1) 애노테이션 기반(@Configuration)의 자바 설정 클래스
 - 생성 방법2) XML 기반
 
+<br/>
 
 ### ✅ BeanDefinition
 - **_스프링 빈 설정 메타정보_**
