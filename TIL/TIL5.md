@@ -69,3 +69,81 @@
     - 특정 클라이언트 값 변경 필드X
     - 되도록 읽기만
     - 지역변수, 파라미터, ThreadLocal (필드 대신에 자바에서 공유되지 않는 것)
+
+
+### ✅ @Configuration 과 스프링 컨테이너의 바이트 코드 조작
+- ```java
+    public class MemberServiceImpl implements MemberService {
+       private final MemberRepository memberRepository;
+       
+       //테스트 용도
+       public MemberRepository getMemberRepository() {
+          return memberRepository;
+       }
+    }
+
+     public class OrderServiceImpl implements OrderService {
+        private final MemberRepository memberRepository;
+    
+        //테스트 용도
+        public MemberRepository getMemberRepository() {
+          return memberRepository;
+        }
+     }
+  ```
+  ```java
+  public class ConfigurationSingletonTest {
+  
+        @Test
+        void configurationTest() {
+           ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+            
+           MemberServiceImpl memberService = ac.getBean("memberService", MemberServiceImpl.class);
+           OrderServiceImpl orderService = ac.getBean("orderService", OrderServiceImpl.class);
+           MemberRepository memberRepository = ac.getBean("memberRepository", MemberRepository.class);
+            
+           Assertions.assertThat(memberService.getMemberRepository()).isSameAs(memberRepository);
+           Assertions.assertThat(orderService.getMemberRepository()).isSameAs(memberRepository);
+        }
+  
+        @Test
+        void configurationDeep(){
+            ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+            AppConfig bean = ac.getBean(AppConfig.class);
+  
+            System.out.println("bean = " + bean.getClass());
+        }     
+     }
+  ```
+
+
+- @Configuration 적용O, @Bean 적용O _**(스프링 컨테이너의 바이트 코드 조작)**_
+  - **_MemberRepository 1개 생성_**
+  - **_출력_** 
+    ```text
+    스프링 컨테이너의 바이트 코드 조작 후 클래스
+    class hello.core.AppConfig$$EnhancerBySpringCGLIB$$bd479d70
+    ```
+  - ![img5_#.png](file/img5_3.png)
+  - **_로직(AppConfig@CGLIB 예상 코드)_**
+    ```
+    @Bean
+    public MemberRepository memberRepository() {
+        if (memoryMemberRepository가 이미 스프링 컨테이너에 등록되어 있으면?) {
+            return 스프링 컨테이너에서 찾아서 반환;
+        } else { 
+            //스프링 컨테이너에 없으면 기존 로직을 호출해서 
+            //MemoryMemberRepository를 생성하고 스프링 컨테이너에 등록
+            return 반환
+        }
+    }
+    ```
+    
+
+- @Configuration 적용X , @Bean 적용O
+  - **_MemberRepository 여러 개 생성_** 
+  - **_출력_**
+    ```text
+    순수 클래스
+    class hello.core.AppConfig
+    ```
