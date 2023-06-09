@@ -17,6 +17,8 @@
   - ![img3_2.png](file/img3_2.png)
   - ![img3_3.png](file/img3_3.png)
 
+<br/>
+
 ### ✅ 관심사의 분리
 - AppConfig
   - 애플리케이션의 전체 작동 방식을 구성(config)하기 위해<br>***구현 객체***를 ***생성하고 연결***하는 책임을 가지는 클래스
@@ -37,25 +39,27 @@
   - MemberService, OrderService의 MemoryRepository 중복 제거
   - MemberService, OrderService의 생성자(new)가 아닌 메소드를 통해 역할과 구현 구분
 
+<br/>
 
 ### ✅ SOLID 3가지 원칙 정리
 - SRP 단일 책임 원칙
   - 한 클래스는 하나의 책임
-  - AppConfig: 구현 객체를 생성하고 연결 책임
-  - 클라이언트: 실행하는 책임
+    - AppConfig: 구현 객체를 생성하고 연결 책임
+    - 클라이언트: 실행하는 책임
 
 
 - DIP 의존관계 역전 원칙
   - 추상화 의존O, 구체화 의존X
-  - OrderServiceImpl이 DiscountPolicy(추상)뿐만 아니라 FixDiscountPolicy, RateDiscountPolicy(구현)에 의존
-    - AppConfig로 해결
+    - OrderServiceImpl이 DiscountPolicy(추상)뿐만 아니라 FixDiscountPolicy, RateDiscountPolicy(구현)에 의존
+      - AppConfig로 해결
 
 
 - OCP 개방 폐쇄 원칙
   - 확장에는 열려있지만, 변경에는 닫힘
-  - 할인 정책을 변경하면, 클라이언트 코드(OrderServiceImpl)영향X
-  - 할인 정책을 변경하면, AppConfig 영향O
+    - 할인 정책을 변경하면, 클라이언트 코드(OrderServiceImpl)영향X
+    - 할인 정책을 변경하면, AppConfig 영향O
 
+<br/>
 
 ### ✅ IOC, DI, 컨테이너
 - IOC(제어의 역전)
@@ -84,6 +88,7 @@
   - DI(의존관계 주입) 초점을 맞추어 **_DI 컨테이너_** 로 부름
   - **_어셈블러, 오브젝트 팩토리_** 부름
 
+<br/>
 
 ### ✅ 스프링 적용
 - 스프링 컨테이너(ApplicationContext)
