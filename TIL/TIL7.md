@@ -141,3 +141,90 @@
     - 해결) `@RequireArgsConstructor`: final 키워드를 통한 필드를 인식해서, 생성자(값 대입 코드) 생성
   - `Preferences` -> `Annotation Processors` -> `Enable annotation processing` 설정
     - **_Annotation Processors 라는 기능_** 을 통해 **_컴파일 시점에 생성자 코드 생성_**
+
+<br/>
+
+### ✅ 의존관계 주입 - 타입으로 빈 조회 시 중복 문제 해결 방법
+- 타입으로 빈 조회 시 중복 문제 해결 방법 - `@Autowired` 필드 명 매칭
+  - (1) 타입 조회<br>
+    (2) 타입 조회 결과 2개 이상 일때 **_필드명, 매개변수 명_** 으로 빈 이름 조회 
+  - ```java
+    @Component
+    public class OrderServiceImpl implements OrderService {
+        private final MemberRepository memberRepository;
+        private final DiscountPolicy discountPolicy;
+    
+        @Autowired
+        public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy fixDiscountPolicy){
+            this.memberRepository = memberRepository;    
+            this.discountPolicy = fixDiscountPolicy;
+        }
+    } 
+    ``` 
+
+
+- 타입으로 빈 조회 시 중복 문제 해결 방법 - `@Qualifier` 사용
+  - (1) `@Qualifier` 끼리 매칭<br>
+    (2) 빈 이름 조회<br>
+    (3) `NoSuchBeanDefinitionException` 발생
+  - ```java
+    @Component
+    @Qualifier("mainDiscountPolicy")
+    public class RateDiscountPolicy implements DiscountPolicy {
+    
+    }
+    
+    @Component
+    @Qualifier("fixDiscountPolicy")
+    public class FixDiscountPolicy implements DiscountPolicy {
+    
+    }
+    
+    @Component
+    public class OrderServiceImpl implements OrderService {
+        private final MemberRepository memberRepository;
+        private final DiscountPolicy discountPolicy;
+    
+        @Autowired
+        public OrderServiceImpl(MemberRepository memberRepository, @Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy){
+            this.memberRepository = memberRepository;    
+            this.discountPolicy = discountPolicy;
+        }
+    } 
+    ``` 
+
+
+- 타입으로 빈 조회 시 중복 문제 해결 방법 - `@Primary` 사용
+  - ```java
+    @Component
+    @Primary
+    public class RateDiscountPolicy implements DiscountPolicy {
+    
+    }
+    
+    @Component
+    public class FixDiscountPolicy implements DiscountPolicy {
+    
+    }
+    
+    @Component
+    public class OrderServiceImpl implements OrderService {
+        private final MemberRepository memberRepository;
+        private final DiscountPolicy discountPolicy;
+    
+        @Autowired
+        public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy){
+            this.memberRepository = memberRepository;    
+            this.discountPolicy = discountPolicy;
+        }
+    } 
+    ``` 
+    
+
+- 정리(타입으로 빈 조회 시 중복 문제 해결 방법)
+  - 메인 데이터베이스의 커넥션을 획득하는 스프링 빈 -> `@Primary`<br>
+    서브 데이터베이스의 커넥션을 획득하는 스프링 빈 -> `@Qualifier`
+  - 우선순위<br/>
+    `@Primary` -> 기본값 동작<br>
+    `@Qualifier` -> 매우 상세하게 동작<br>
+    따라서 자동 < 수동, 넓은 범위 < 좁은 범위 이기 때문에 `@Qualifier` > `@Primary`
