@@ -149,3 +149,75 @@
       - 인터페이스(`InitializingBean`, `DisposableBean`)를 구현하면<br>
         `의존관계 주입 후` / `스프링 컨테이너 종료 전` 각각 정해진 메소드를 호출하기 때문에<br>
       - `시작메소드(go)`, `종료메소드(bye)`를 호출해줄 수 있는 방법이 없다.
+
+
+- 스프링 빈 생명주기 콜백 방법 - 설정 정보에 초기화 메소드, 종료 메소드 지정
+  - ```java
+    public class NetworkClient {
+  
+      private String url;
+  
+      public NetworkClient(){
+          System.out.println("생성자 호출, url = " + this.url);
+      }
+  
+      public void setUrl(String url) {
+          this.url = url;
+      }
+  
+      //서비스 시작 시 호출
+      public void connect() {
+          System.out.println("connect: " + this.url);
+      }
+  
+      public void call(String message) {
+          System.out.println("call: " + this.url + ", message = " + message);
+      }
+  
+      //서비스 종료 시 호출
+      public void disconnect(){
+          System.out.println("close:" + this.url);
+      }
+  
+      public void init() {
+          System.out.println("NetworkClient.init");
+          connect();
+          call("초기화 연결 메시지");
+      }
+  
+      public void close() {
+          System.out.println("NetworkClient.close");
+          disconnect();
+      }
+    }
+    
+    public class BeanLifeCycleTest {
+    
+       @Test
+       public void lifeCycleTest() {
+          ConfigurableApplicationContext ac = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
+          NetworkClient client = ac.getBean(NetworkClient.class);
+          ac.close();
+       }
+
+       @Configuration
+       static class LifeCycleConfig {
+
+          @Bean(initMethod = "init", destroyMethod = "close")
+          public NetworkClient networkClient() {
+               NetworkClient networkClient = new NetworkClient();
+               networkClient.setUrl("http://hello-spring.dev");
+               return networkClient;
+          }
+       }
+    }
+    ```
+  - 장점
+    - 스프링 전용 인터페이스에 의존 X
+    - 초기화, 소멸 메소드의 이름 변경 가능
+    - 내가 코드를 고칠 수 없는 외부 라이브러리에 적용O
+  
+  - `@Bean`의 `destroyMethod` 
+    - 기본값: `(inferred)` = `추론` 으로 등록<br>
+      `close`, `shutdown`라는 메소드 자동 호출(라이브러리 대부분 `close`, `shutdown` 사용)
+    - 기본값 x: `destroyMethod=""` 빈 공백 지정 
