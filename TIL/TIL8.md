@@ -89,3 +89,63 @@
   - `초기화`: 생성된 값을 활용해 무거운 동작 수행  **_ex) 외부 커넥션 연결_**
   - 따라서 `객체를 생성하는 부분`과 `초기화 하는 부분`을 명확하게 나누기<br>
     단순한 경우에는 `생성자`에서 한번에 처리
+
+<br/>
+
+### ✅ 스프링 빈 생명주기 콜백 - 다양한 방법
+- 스프링 빈 생명주기 콜백 방법
+  - 인터페이스(InitializingBean, DisposableBean)
+  - 설정 정보에 초기화 메서드, 종료 메서드 지정 
+  - @PostConstruct, @PreDestroy 애노테이션 지원
+
+
+- 스프링 빈 생명주기 콜백 방법 - 인터페이스(InitializingBean, DisposableBean)
+  - ```java
+    public class NetworkClient implements InitializingBean, DisposableBean {
+    
+        private String url;
+    
+        public NetworkClient(){
+            System.out.println("생성자 호출, url = " + this.url);
+        }
+    
+        public void setUrl(String url) {
+            this.url = url;
+        }
+    
+        //서비스 시작 시 호출
+        public void connect() {
+            System.out.println("connect: " + this.url);
+        }
+    
+        public void call(String message) {
+            System.out.println("call: " + this.url + ", message = " + message);
+        }
+    
+        //서비스 종료 시 호출
+        public void disconnect(){
+            System.out.println("close:" + this.url);
+        }
+    
+        @Override
+        public void afterPropertiesSet() throws Exception {
+            System.out.println("NetworkClient.afterPropertiesSet");
+            connect();
+            call("초기화 연결 메시지");
+        }
+    
+        @Override
+        public void destroy() throws Exception {
+            System.out.println("NetworkClient.destroy");
+            disconnect();
+        }
+    }
+    ```
+  - 단점
+    - 스프링 전용 인터페이스에 의존
+    - 초기화, 소멸 메소드의 이름 변경 불가
+    - 내가 코드를 고칠 수 없는 외부 라이브러리에 적용x
+      - 이는 외부라이브러리에서 `시작메소드(go)`, `종료메소드(bye)`를 꼭 호출해야될 때<br>
+      - 인터페이스(`InitializingBean`, `DisposableBean`)를 구현하면<br>
+        `의존관계 주입 후` / `스프링 컨테이너 종료 전` 각각 정해진 메소드를 호출하기 때문에<br>
+      - `시작메소드(go)`, `종료메소드(bye)`를 호출해줄 수 있는 방법이 없다.
