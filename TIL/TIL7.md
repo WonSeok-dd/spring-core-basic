@@ -106,3 +106,11 @@
 - 의존관계 주입 - 일반 메소드 주입
   - 일반 메소드에 주입
   - 의존관계 주입 - 수정자 주입(setter 주입)와 유사
+
+<br/>
+
+### ✅ 옵션 처리
+- 옵션 처리 종류
+  - `@Autowired(required=false)` -> 의존관계 주입 대상 없어도 동작 가능 / **_메소드 호출 X_**
+  - `org.springframework.lang.@Nullable` -> 의존관계 주입 대상 없으면 null 입력 / **_메소드 호출 O_**
+  - `Optional<>` -> 의존관계 주입 대상 없으면 `Optional.empty` 입력 / **_메소드 호출 O_**
