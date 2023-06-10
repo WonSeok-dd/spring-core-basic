@@ -132,3 +132,12 @@
 - 정리(의존관계 주입 - 생성자 주입 중요성 )
   - 프레임워크에 의존하지 않고, 순수한 자바 언어 특징 
   - 필수 값이 아닌 경우: **_의존관계 주입 - 수정자 주입(setter 주입)_**
+
+<br/>
+
+### ✅ Lombok
+- Lombok
+  - final 키워드를 통한 필드 생성, 생성자(값 대입 코드) 생성 -> 귀찮다!
+    - 해결) `@RequireArgsConstructor`: final 키워드를 통한 필드를 인식해서, 생성자(값 대입 코드) 생성
+  - `Preferences` -> `Annotation Processors` -> `Enable annotation processing` 설정
+    - **_Annotation Processors 라는 기능_** 을 통해 **_컴파일 시점에 생성자 코드 생성_**
