@@ -221,3 +221,77 @@
     - 기본값: `(inferred)` = `추론` 으로 등록<br>
       `close`, `shutdown`라는 메소드 자동 호출(라이브러리 대부분 `close`, `shutdown` 사용)
     - 기본값 x: `destroyMethod=""` 빈 공백 지정 
+
+
+- 스프링 빈 생명주기 콜백 방법 - @PostConstruct, @PreDestroy 애노테이션 지원
+  - ```java
+    public class NetworkClient {
+  
+      private String url;
+  
+      public NetworkClient(){
+          System.out.println("생성자 호출, url = " + this.url);
+      }
+  
+      public void setUrl(String url) {
+          this.url = url;
+      }
+  
+      //서비스 시작 시 호출
+      public void connect() {
+          System.out.println("connect: " + this.url);
+      }
+  
+      public void call(String message) {
+          System.out.println("call: " + this.url + ", message = " + message);
+      }
+  
+      //서비스 종료 시 호출
+      public void disconnect(){
+          System.out.println("close:" + this.url);
+      }
+  
+      @PostConstruct
+      public void init() {
+          System.out.println("NetworkClient.init");
+          connect();
+          call("초기화 연결 메시지");
+      }
+  
+      @PreDestroy
+      public void close() {
+          System.out.println("NetworkClient.close");
+          disconnect();
+      }
+    }
+    
+    public class BeanLifeCycleTest {
+
+       @Test
+       public void lifeCycleTest() {
+           ConfigurableApplicationContext ac = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
+           NetworkClient client = ac.getBean(NetworkClient.class);
+           ac.close();
+       }
+
+       @Configuration
+       static class LifeCycleConfig {
+
+           @Bean
+           public NetworkClient networkClient() {
+               NetworkClient networkClient = new NetworkClient();
+               networkClient.setUrl("http://hello-spring.dev");
+               return networkClient;
+           }
+       }
+    }
+    ```
+    - 장점
+    - 스프링 전용 인터페이스에 의존 X
+      - `javax.annotation.PostConstruct` JSR-250의 자바 표준
+      - 다른 컨테이너에서도 동작
+    - 초기화, 소멸 메소드의 이름 변경 가능
+    - 내가 코드를 고칠 수 없는 외부 라이브러리에 적용X
+      - `@Bean(initMethod = "init", destroyMethod = "close")`<br>
+         -> **_설정 정보에 초기화 메소드, 종료 메소드 지정_** 를 사용하자
+    - 컴포넌트 스캔에 어울림
