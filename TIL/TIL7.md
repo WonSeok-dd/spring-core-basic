@@ -281,3 +281,36 @@ public class AllBeanTest {
   - Map 으로 DiscountPolicy 의존관계 주입
     - fixDiscountPolicy, rateDiscountPolicy
   - List 로 DiscountPolicy 의존관계 주입
+
+<br/>
+
+### ✅ 컴포넌트 스캔과 의존관계 주입 - 자동, 수동의 실무 운영 기준
+- **_업무 로직 빈_**: 자동
+  - 웹을 지원하는 컨트롤러
+  - 핵심 비즈니스 로직이 있는 서비스
+  - 데이터 계층의 로직을 처리하는 레포지토리
+  
+
+- **_기술 지원 빈_**: 수동
+  - 기술적인 문제
+  - 공통 관심사(AOP) ex) 데이터베이스 연결, 공통 로그 처리
+
+
+- **_비즈니스 로직 중에서 다형성 적극 활용_**: 수동
+  ```java
+    @Configuration
+      public class DiscountPolicyConfig {
+    
+          @Bean
+          public DiscountPolicy rateDiscountPolicy() {
+              return new RateDiscountPolicy();
+          }
+     
+          @Bean 
+          public DiscountPolicy fixDiscountPolicy() {
+              return new FixDiscountPolicy();
+          }
+      }
+  ```
+  - 빈의 이름, 빈의 의존관계 주입 파악 가능
+  - 따라서 `DiscountPolicy` 의 구현 빈들만 따로 모아서 특정 패키지 만들기
