@@ -234,3 +234,50 @@
 ### ✅ 의존관계 주입 - 타입으로 빈 조회 시 중복 문제 해결 방법(`@Qualifier` 사용)시 `Annotation` 생성
 - **_스프링 지원: 여러 애노테이션 모아서 사용_**
   - 애노테이션은 상속X
+
+<br/>
+
+### ✅ 의존관계 주입 - 타입으로 조회한 빈이 모두 필요
+```java
+public class AllBeanTest {
+
+    @Test
+    void findAllBean() {
+        //given
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class, DiscountService.class);
+        DiscountService discountService = ac.getBean(DiscountService.class);
+        Member member = new Member(1L, "userA", Grade.VIP);
+
+        //when
+        int fixDiscountPrice = discountService.discount(member, 10000, "fixDiscountPolicy");
+        int rateDiscountPrice = discountService.discount(member, 20000, "rateDiscountPolicy");
+
+        //then
+        Assertions.assertThat(discountService).isInstanceOf(DiscountService.class);
+        Assertions.assertThat(fixDiscountPrice).isEqualTo(1000);
+        Assertions.assertThat(rateDiscountPrice).isEqualTo(2000);
+    }
+
+    static class DiscountService {
+
+        private final Map<String, DiscountPolicy> policyMap;
+        private final List<DiscountPolicy> policies;
+
+        //DiscountPolicy -> DiscountService 의존관계 주입
+        @Autowired
+        public DiscountService(Map<String, DiscountPolicy> policyMap, List<DiscountPolicy> policies){
+            this.policyMap = policyMap;
+            this.policies = policies;
+        }
+
+        public int discount(Member member, int price, String discountCode) {
+            DiscountPolicy discountPolicy = policyMap.get(discountCode);
+            return discountPolicy.discount(member, price);
+        }
+    }
+}
+```
+- DiscountSerivce
+  - Map 으로 DiscountPolicy 의존관계 주입
+    - fixDiscountPolicy, rateDiscountPolicy
+  - List 로 DiscountPolicy 의존관계 주입
