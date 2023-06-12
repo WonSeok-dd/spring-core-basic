@@ -290,3 +290,25 @@
       - 호출 시점에는 **_HTTP 요청 진행_** 중이므로, **_request 스코프 빈_** 생성
       - `LogDemoController`, `LogDemoService` 에서 각각 한번씩 호출해도<br/>
         **_같은 HTTP 요청_** 이면 **_같은 스프링 빈_**
+
+
+- 웹 스코프 - request 스코프 예제 문제 해결
+  - **_해결)_** `Proxy` 이용
+    - `@Scope(value ="request", proxyMode = ScopedProxyMode.TARGET_CLASS)`
+      - 클래스 -> `TARGET_CLASS`
+      - 인터페이스 -> `INTERFACES`
+    <br/><br/>
+    - `MyLogger`의 **_가짜 프록시 클래스_** 를 만들고<br> 
+       HTTP 요청과 상관없이 **_가짜 프록시 클래스_** 를 **_다른 빈에 미리 주입_**
+      - ![img9_10.png](file/img9_10.png)
+    <br/><br/>
+    - `CGLIB` 라이브러리를 통해, 내 클래스를 상속 받은 가짜 프록시 객체를 만들어 주입
+      - `myLogger = class hello.core.common.MyLogger$$EnhancerBySpringCGLIB$$b68b726d`
+      - **_DI(Dependency Injection)_**: `가짜 프록시 객체`
+      - **_DL(Dependency Lookup)_**: `MyLogger`<br/>
+    <br/><br/>
+    - `가짜 프록시 객체`는 HTTP 요청이 오면, 내부에 **_진짜 스프링 빈을 요청하는 위임 로직_** 존재
+      - 클라이언트 -> `가짜 프록시 객체` 메소드 호출 -> `myLogger.logic()` 메소드 호출
+      - `가짜 프록시 객체`는 원본 클래스를 상속 받아 만들어졌기 때문에<br/>
+        이 객체를 사용하는 클라이언트 입장에서는 원본인지 모르게 사용(**_다형성_**)
+      - 프록시를 보면서 `가짜 프록시 객체`를 생성하고 `진짜 객체`를 조회 할 때까지 지연 처리
