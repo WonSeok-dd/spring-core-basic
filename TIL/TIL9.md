@@ -22,7 +22,7 @@
   - **_웹 관련 스코프_**
     - **_request_**: 웹 요청이 들어오고 나갈때까지 유지
     - **_session_**: 웹 세션이 생성되고 종료될때까지 유지
-    - **_application_**: 웹의 서블릿 컨텍스와 같은 범위로 유지
+    - **_application_**: 웹의 서블릿 컨텍스트와 같은 범위로 유지
 
 
 - 스프링 빈 스코프 생성
@@ -223,3 +223,61 @@
   - **_프로토타입 빈 사용 시점_**
     - 사용할 때 마다 의존관계 주입이 완료된 새로운 객체 필요 시, 사용
     - 대부분 `싱글톤 빈`으로 해결되기 때문에, 거의 사용 X
+
+<br>
+
+### ✅ 스프링 빈 스코프 - 웹 스코프
+- 웹 스코프
+  - 웹 환경에서만 동작
+  - 해당 스코프의 종료시점 까지 관리, 종료 메소드 호출
+
+
+- 웹 스코프 종류
+  - **_request_**
+    - 웹 요청이 들어오고 나갈때까지 유지
+    - HTTP 요청마다 새로운 인스턴스 생성 및 관리
+  - **_session_**
+    - 웹 세션이 생성되고 종료될때까지 유지
+  - **_application_**
+    - 웹의 서블릿 컨텍스트와 같은 범위로 유지
+
+
+- 웹 스코프 - request 스코프
+  - ![img9_9.png](file/img9_9.png)
+
+
+- 웹 스코프 - request 스코프 예제
+  - `implementation 'org.springframework.boot:spring-boot-starter-web'` 추가
+    - 내장 톰켓 서버를 활용해서 웹 서버와 스프링을 함께 실행
+    - 웹 라이브러리 X
+      - `AnnotationConfigApplicationContext` 를 기반으로 애플리케이션 구동
+    - 웹 라이브러리 O
+      - `AnnotationConfigServletWebServerApplicationContext` 를 기반으로 애플리케이션 구동
+
+  - **_예제_**
+    - 여러 HTTP 요청이 와서 로그 구분 어려울때, 사용
+      - **_기대하는 공통 포맷_**: `[UUID][requestURL]{message}`
+        - `UUID` 를 사용해 HTTP 요청 구분
+        - `requestURL` 을 사용해 어떤 URL 요청한 로그인지 확인
+      <br/><br/>
+      - `MyLogger` 클래스 
+        - **_request 스코프_** 이기 때문에, **_HTTP 요청이 들어오고 나갈때 까지 유지_** -> **오류❗**
+            - **해결)** `Provider` 이용<br/>
+              -> **_DI(Dependency Injection)_**: `Provider`<br/>
+              -> **_DL(Dependency Lookup)_**: `MyLogger`<br/>
+              -> `MyLogger`: **_request 스코프_** 이기 때문에, **_스프링 만들어지는 시점 존재X_**<br/>
+              -> `MyLogger`: **_request 스코프_** 이기 때문에, **_사용할 때 마다 생성하는 것_**
+      <br/><br/>
+      - `LogDemoController` 클래스
+        - 로거 출력하는 테스트용 컨트롤러
+        - `HttpServletRequest`를 통해서 요청 URL 받음
+           - `http://localhost:8080/log-demo`
+      <br/><br/>
+      - `LogDemoService` 클래스
+        - 로거 출력하는 테스트용 서비스
+        - `MyLogger`(**_request 스코프_**) 사용 X
+          - 서비스 계층에 전달되는 파라미터가 많아짐
+          - `requestURL` 같은 웹 관련 정보 전달됨 
+        - `MyLogger`(**_request 스코프_**) 사용 O
+          - 서비스 계층에 전달되는 파라미터 없음
+          - `myLogger` 멤버변수에 저장해 코드와 계층을 구분
