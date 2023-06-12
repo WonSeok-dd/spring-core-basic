@@ -281,3 +281,12 @@
         - `MyLogger`(**_request 스코프_**) 사용 O
           - 서비스 계층에 전달되는 파라미터 없음
           - `myLogger` 멤버변수에 저장해 코드와 계층을 구분
+
+
+- 웹 스코프 - request 스코프 예제 문제 해결
+  - **_해결)_** `ObjectProvider` 이용
+    - `ObjectProvider.getObject()`
+      - 호출 시점까지 **_request 스코프 빈_** 생성을 지연
+      - 호출 시점에는 **_HTTP 요청 진행_** 중이므로, **_request 스코프 빈_** 생성
+      - `LogDemoController`, `LogDemoService` 에서 각각 한번씩 호출해도<br/>
+        **_같은 HTTP 요청_** 이면 **_같은 스프링 빈_**
