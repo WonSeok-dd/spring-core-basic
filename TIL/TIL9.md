@@ -164,7 +164,6 @@
     - 옵션, 스트림 처리 편의기능 많음
     - 별도의 라이브러리 필요 X
     - 스프링에 의존
-
   - ```java
     @Scope("singleton")
     static class ClientBean {
@@ -197,8 +196,6 @@
       - `jakarta.inject:jakarta.inject-api:2.0.1` 라이브러리를 `gradle` 에 추가
     - 별도의 라이브러리 필요
     - 스프링에 의존 X
-
-
   - ```java
     @Scope("singleton")
     static class ClientBean {
@@ -242,10 +239,6 @@
     - 웹의 서블릿 컨텍스트와 같은 범위로 유지
 
 
-- 웹 스코프 - request 스코프
-  - ![img9_9.png](file/img9_9.png)
-
-
 - 웹 스코프 - request 스코프 예제
   - `implementation 'org.springframework.boot:spring-boot-starter-web'` 추가
     - 내장 톰켓 서버를 활용해서 웹 서버와 스프링을 함께 실행
@@ -263,10 +256,6 @@
       - `MyLogger` 클래스 
         - **_request 스코프_** 이기 때문에, **_HTTP 요청이 들어오고 나갈때 까지 유지_** -> **오류❗**
             - **해결)** `Provider` 이용<br/>
-              -> **_DI(Dependency Injection)_**: `Provider`<br/>
-              -> **_DL(Dependency Lookup)_**: `MyLogger`<br/>
-              -> `MyLogger`: **_request 스코프_** 이기 때문에, **_스프링 만들어지는 시점 존재X_**<br/>
-              -> `MyLogger`: **_request 스코프_** 이기 때문에, **_사용할 때 마다 생성하는 것_**
       <br/><br/>
       - `LogDemoController` 클래스
         - 로거 출력하는 테스트용 컨트롤러
@@ -288,8 +277,14 @@
     - `ObjectProvider.getObject()`
       - 호출 시점까지 **_request 스코프 빈_** 생성을 지연
       - 호출 시점에는 **_HTTP 요청 진행_** 중이므로, **_request 스코프 빈_** 생성
-      - `LogDemoController`, `LogDemoService` 에서 각각 한번씩 호출해도<br/>
-        **_같은 HTTP 요청_** 이면 **_같은 스프링 빈_**
+    <br/><br/>
+    - `LogDemoController`, `LogDemoService` 에서 각각 한번씩 호출해도<br/>
+      **_같은 HTTP 요청_** 이면 **_같은 스프링 빈_**
+      - **_DI(Dependency Injection)_**: `Provider`
+      - **_DL(Dependency Lookup) 받음_**: `MyLogger`<br/>
+      -> `MyLogger`: **_request 스코프_** 이기 때문에, **_스프링 만들어지는 시점 존재X_**<br/>
+      -> `MyLogger`: **_request 스코프_** 이기 때문에, **_사용할 때 마다 생성하는 것_**
+      - ![img9_9.png](file/img9_9.png)
 
 
 - 웹 스코프 - request 스코프 예제 문제 해결
@@ -305,7 +300,7 @@
     - `CGLIB` 라이브러리를 통해, 내 클래스를 상속 받은 가짜 프록시 객체를 만들어 주입
       - `myLogger = class hello.core.common.MyLogger$$EnhancerBySpringCGLIB$$b68b726d`
       - **_DI(Dependency Injection)_**: `가짜 프록시 객체`
-      - **_DL(Dependency Lookup)_**: `MyLogger`<br/>
+      - **_DL(Dependency Lookup) 받음_**: `MyLogger`<br/>
     <br/><br/>
     - `가짜 프록시 객체`는 HTTP 요청이 오면, 내부에 **_진짜 스프링 빈을 요청하는 위임 로직_** 존재
       - 클라이언트 -> `가짜 프록시 객체` 메소드 호출 -> `myLogger.logic()` 메소드 호출
