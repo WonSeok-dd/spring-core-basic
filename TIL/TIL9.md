@@ -143,3 +143,83 @@
     빈_** 을 주입
     - clientA prototypeBean@x01
     - clientB prototypeBean@x02
+
+<br>
+
+### ✅ 스프링 빈 스코프 - 싱글톤 스코프, 프로토타입 스코프 함께 사용 시 문제점 해결
+- **_해결)_** 의존관계 조회(DL = Dependency Lookup)
+  - 스프링 컨테이너에 종속적
+  - 단위 테스트 어렵
+
+
+- **_해결)_** `ObjectFactory`, `ObjectProvider`
+  - 의존관계 조회(DL = Dependency Lookup) 
+    - 지정한 빈을 컨테이너에서 대신 찾아줌
+  - `ObjectFactory`
+    - 기능이 단순
+    - 별도의 라이브러리 필요 없음
+    - 스프링에 의존
+  - `ObjectProvider`
+    - `ObjectFactory` 상속
+    - 옵션, 스트림 처리 편의기능 많음
+    - 별도의 라이브러리 필요 X
+    - 스프링에 의존
+
+  - ```java
+    @Scope("singleton")
+    static class ClientBean {
+
+        private final ObjectProvider<PrototypeBean> prototypeBeanObjectProvider;
+
+        @Autowired
+        public ClientBean(ObjectProvider<PrototypeBean> prototypeBeanObjectProvider){
+            this.prototypeBeanObjectProvider = prototypeBeanObjectProvider;
+        }
+
+        public int logic() {
+            PrototypeBean prototypeBean = this.prototypeBeanObjectProvider.getObject();
+            prototypeBean.addCount();
+            return prototypeBean.getCount();
+        }
+    }
+    ```
+
+
+- **_해결)_** `JSR-330 Provider`
+  - 의존관계 조회(DL = Dependency Lookup)
+    - 지정한 빈을 컨테이너에서 대신 찾아줌
+  - `JSR-330 Provider`
+    - **(스프링 부트 3.0 미만)**
+      - `javax.inject.Provider`인 `JSR-330` 자바 표준을 사용
+      - `javax.inject:javax.inject:1` 라이브러리를 `gradle` 에 추가
+    - **(스프링 부트 3.0 이상)**
+      - `jakarta.inject.Provider` 사용
+      - `jakarta.inject:jakarta.inject-api:2.0.1` 라이브러리를 `gradle` 에 추가
+    - 별도의 라이브러리 필요
+    - 스프링에 의존 X
+
+
+  - ```java
+    @Scope("singleton")
+    static class ClientBean {
+
+        private final Provider<PrototypeBean> prototypeBeanObjectProvider;
+
+        @Autowired
+        public ClientBean(Provider<PrototypeBean> prototypeBeanObjectProvider){
+            this.prototypeBeanObjectProvider = prototypeBeanObjectProvider;
+        }
+
+        public int logic() {
+            PrototypeBean prototypeBean = this.prototypeBeanObjectProvider.get();
+            prototypeBean.addCount();
+            return prototypeBean.getCount();
+        }
+    }
+    ```  
+    
+
+- 정리
+  - **_프로토타입 빈 사용 시점_**
+    - 사용할 때 마다 의존관계 주입이 완료된 새로운 객체 필요 시, 사용
+    - 대부분 `싱글톤 빈`으로 해결되기 때문에, 거의 사용 X
